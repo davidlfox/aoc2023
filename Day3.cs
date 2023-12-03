@@ -47,6 +47,7 @@ public static class Day3
         
         List<int> parts = [];
         List<char> uniques = ['-', '*', '&', '$', '@', '/', '#', '=', '%', '+'];
+        Dictionary<(int, int), List<int>> gears = [];
 
         for(int i = 0;i < 142;i++)
         {
@@ -92,9 +93,17 @@ public static class Day3
 
                     foreach(var coord in coordsToCheck.Distinct())
                     {
-                        if (uniques.Contains(grid[coord.Item1,coord.Item2]))
+                        if (grid[coord.Item1,coord.Item2] == '*')
                         {
                             parts.Add(int.Parse(fullNum));
+                            if (gears.ContainsKey((coord.Item1,coord.Item2)))
+                            {
+                                gears[(coord.Item1,coord.Item2)].Add(int.Parse(fullNum));
+                            }
+                            else
+                            {
+                                gears[(coord.Item1, coord.Item2)] = [int.Parse(fullNum)];
+                            }
                             Console.WriteLine($"Found {grid[coord.Item1,coord.Item2]} at ({coord.Item1},{coord.Item2})");
                             break;
                         }
@@ -107,6 +116,8 @@ public static class Day3
             }
         }
 
-        Console.WriteLine($"Part 1: {parts.Sum()}");
+        // Console.WriteLine($"Part 1: {parts.Sum()}");
+        // console writeline the sum of the product of the gears where the array length is exactly 2
+        Console.WriteLine($"Part 2: {gears.Where(kvp => kvp.Value.Count == 2).Select(kvp => kvp.Value.Aggregate(1, (acc, val) => acc * val)).Sum()}");
     }
 }

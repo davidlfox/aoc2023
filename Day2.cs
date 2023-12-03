@@ -8,33 +8,35 @@ public static partial class Day2
 
     public static void Run()
     {
-        List<int> possibleGames = [];
-        for(int i = 1; i <= 100; i++)
-        {
-            possibleGames.Add(i);
-        }
+        List<int> gamePowers = [];
         foreach(var game in File.ReadAllLines("./day2in.txt"))
         {
             int gameNum = int.Parse(GameNum().Match(game).Groups[1].Value);
-            string[] pulls = RemovePrefix().Replace(game, string.Empty).Split(';');
-            foreach(var pull in pulls)
+            var pulls = Pull().Matches(game);
+            Dictionary<string, int> colors = [];
+            foreach(Match pull in pulls)
             {
-                var matches = Pull().Matches(pull);
-                foreach(Match match in matches)
+                int count = int.Parse(pull.Groups[2].Value);
+                string color = pull.Groups[3].Value;
+                if (colors.TryGetValue(color, out int value))
                 {
-                    int count = int.Parse(match.Groups[2].Value);
-                    string color = match.Groups[3].Value;
-                    if((color == "red" && count > redMax)
-                        || (color == "blue" && count > blueMax)
-                        || (color == "green" && count > greenMax))
-                        {
-                            possibleGames.Remove(gameNum);
-                        }
+                    if (count > colors[color])
+                    {
+                        colors[color] = count;
+                    }
+                }
+                else
+                {
+                    colors[color] = count;
                 }
             }
+            // write out the game number and the colors from the colors dictionary
+            Console.WriteLine($"Game {gameNum}: {string.Join(", ", colors.Select(kvp => $"{kvp.Value} {kvp.Key}"))}");
+            gamePowers.Add(colors.Values.Aggregate(1, (acc, val) => acc * val));
         }
-        Console.WriteLine($"Possible games: {string.Join(", ", possibleGames)}");
-        Console.WriteLine($"Sum: {possibleGames.Sum()}");
+        Console.WriteLine($"Part 2: {gamePowers.Sum()}");
+        // 3483 is too low, because i was dumb and getting min
+        // changing the check to max fixes it and yields: 78669
     }
 
     [GeneratedRegex(@"Game (\d+): ")]

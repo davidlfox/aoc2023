@@ -31,33 +31,36 @@ public static class Day5
 
         long lowest = long.MaxValue;
         long? mappedIndex;
-        foreach(long seed in seeds)
+        for(long i = 0;i < seeds.Length; i += 2)
         {
-            mappedIndex = seed;
-            for(int i = 0;i < mappings.Count;i++)
+            for(long j = seeds[i];j < seeds[i] + seeds[i + 1];j++)
             {
-                var mapped = mappings[i].GetMapping(mappedIndex.Value);
-                if (mapped != null)
+                mappedIndex = j;
+                for(int k = 0;k < mappings.Count;k++)
                 {
-                    mappedIndex = mapped.Value;
-                }
-
-                // Console.WriteLine($"debug: {seed} -> {mappedIndex}");
-
-                // finally, if its the last mapping
-                if (i == mappings.Count - 1)
-                {
-                    if (mappedIndex < lowest)
+                    var mapped = mappings[k].GetMapping(mappedIndex.Value);
+                    if (mapped != null)
                     {
-                        // check and potentially set lowest
-                        lowest = (long)mappedIndex;
+                        mappedIndex = mapped.Value;
+                    }
+
+                    // Console.WriteLine($"debug: {seed} -> {mappedIndex}");
+
+                    // finally, if its the last mapping
+                    if (k == mappings.Count - 1)
+                    {
+                        if (mappedIndex < lowest)
+                        {
+                            // check and potentially set lowest
+                            lowest = (long)mappedIndex;
+                        }
                     }
                 }
+                // Console.WriteLine($"after: {seed} -> {mappedIndex} [{lowest}]");
             }
-            // Console.WriteLine($"after: {seed} -> {mappedIndex} [{lowest}]");
         }
 
-        Console.WriteLine($"Part 1: {lowest}");
+        Console.WriteLine($"Part 2: {lowest}");
     }
 
     class RangeMapping
